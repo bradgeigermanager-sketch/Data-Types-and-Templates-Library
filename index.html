@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Template Library & Fillable Forms</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-alt: #020617;
+      --panel: #020617;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.15);
+      --border: #1e293b;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --danger: #f97373;
+      --radius: 8px;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.85);
+      --shadow-subtle: 0 10px 30px rgba(15, 23, 42, 0.7);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1e293b 0, #020617 55%, #000 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 1200px;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.98));
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      backdrop-filter: blur(18px);
+    }
+
+    header {
+      padding: 18px 22px 14px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 55%);
+    }
+
+    header .title-block {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-pill {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0, #e0f2fe, #38bdf8 40%, #0f172a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0b1120;
+      font-weight: 800;
+      font-size: 18px;
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.7), 0 10px 25px rgba(56, 189, 248, 0.55);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: 0.03em;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    header h1 span {
+      font-weight: 600;
+    }
+
+    header h1 small {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--muted);
+      letter-spacing: 0.16em;
+    }
+
+    header .meta {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: right;
+    }
+
+    header .meta strong {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 0;
+      min-height: 520px;
+    }
+
+    /* Left column: template library */
+    .sidebar {
+      border-right: 1px solid rgba(148, 163, 184, 0.18);
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.98));
+      padding: 16px 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .template-list {
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.98));
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      box-shadow: var(--shadow-subtle);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 260px;
+      overflow: hidden;
+    }
+
+    .template-list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .template-list-header span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .template-list-header button {
+      font-size: 11px;
+      padding: 4px 8px;
+    }
+
+    .template-items {
+      margin-top: 4px;
+      border-radius: 8px;
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 1));
+      border: 1px solid rgba(30, 64, 175, 0.5);
+      padding: 4px;
+      overflow-y: auto;
+      max-height: 190px;
+    }
+
+    .template-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 8px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      color: var(--muted);
+      transition: background 0.15s ease, color 0.15s ease, border 0.15s ease;
+      border: 1px solid transparent;
+    }
+
+    .template-item.active {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.18), rgba(37, 99, 235, 0.18));
+      color: var(--text);
+      border-color: rgba(56, 189, 248, 0.7);
+    }
+
+    .template-item:hover {
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text);
+    }
+
+    .template-item span {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .template-item small {
+      font-size: 11px;
+      color: var(--muted);
+      margin-left: 6px;
+    }
+
+    .template-item button {
+      margin-left: 8px;
+      font-size: 11px;
+      padding: 2px 6px;
+    }
+
+    .template-editor {
+      background: radial-gradient(circle at top right, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.98));
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: var(--shadow-subtle);
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr auto;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    label {
+      font-size: 12px;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    input[type="text"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      background: radial-gradient(circle at top, #020617, #020617);
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      transition: border 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    input[type="text"]:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(56, 189, 248, 0.9);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.5);
+      background: radial-gradient(circle at top, #020617, #020617);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    button {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 1));
+      color: var(--text);
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.15s ease, border 0.15s ease, transform 0.05s ease, box-shadow 0.15s ease;
+    }
+
+    button.primary {
+      background: radial-gradient(circle at top, #38bdf8, #0ea5e9);
+      border-color: rgba(56, 189, 248, 0.9);
+      color: #0b1120;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(56, 189, 248, 0.45);
+    }
+
+    button.primary:hover {
+      background: radial-gradient(circle at top, #7dd3fc, #0ea5e9);
+      transform: translateY(-0.5px);
+      box-shadow: 0 14px 30px rgba(56, 189, 248, 0.55);
+    }
+
+    button:hover {
+      border-color: rgba(148, 163, 184, 0.8);
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 1));
+      transform: translateY(-0.5px);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.7);
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.8);
+    }
+
+    button.danger {
+      border-color: rgba(248, 113, 113, 0.7);
+      color: #fecaca;
+      background: radial-gradient(circle at top, rgba(127, 29, 29, 0.9), rgba(127, 29, 29, 1));
+    }
+
+    button.danger:hover {
+      border-color: rgba(248, 113, 113, 1);
+      background: radial-gradient(circle at top, rgba(185, 28, 28, 0.95), rgba(127, 29, 29, 1));
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 1));
+      color: var(--muted);
+    }
+
+    .pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25);
+    }
+
+    /* Right column: form + entries */
+    .content {
+      padding: 16px 18px 18px;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 12px;
+    }
+
+    .form-panel {
+      background: radial-gradient(circle at top right, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.98));
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      padding: 12px 12px 10px;
+      box-shadow: var(--shadow-subtle);
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .form-section {
+      border-right: 1px dashed rgba(51, 65, 85, 0.9);
+      padding-right: 10px;
+    }
+
+    .form-section:last-child {
+      border-right: none;
+      padding-right: 0;
+    }
+
+    .form-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .form-header h2 {
+      margin: 0;
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .form-header small {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .form-fields {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .form-field label span {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    .form-field small {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .entries-panel {
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.98));
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      padding: 10px;
+      box-shadow: var(--shadow-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .entries-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .entries-header h3 {
+      margin: 0;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    .entries-list {
+      margin-top: 4px;
+      border-radius: 8px;
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 1));
+      border: 1px solid rgba(30, 64, 175, 0.5);
+      padding: 4px;
+      overflow-y: auto;
+      max-height: 210px;
+      font-size: 12px;
+    }
+
+    .entry-item {
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      margin-bottom: 4px;
+      background: rgba(15, 23, 42, 0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .entry-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .entry-item-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .entry-item-body {
+      font-size: 12px;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .entry-item-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .entry-item-actions button {
+      font-size: 10px;
+      padding: 2px 6px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--muted);
+    }
+
+    .badge-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 999px;
+      background: #38bdf8;
+    }
+
+    .empty-state {
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      padding: 10px 4px;
+    }
+
+    .status-bar {
+      padding: 8px 12px;
+      border-top: 1px solid rgba(148, 163, 184, 0.18);
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: radial-gradient(circle at bottom, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 1));
+    }
+
+    .status-bar span strong {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .status-bar .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25);
+      margin-right: 6px;
+    }
+
+    .status-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-right span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .status-right code {
+      font-size: 11px;
+      background: rgba(15, 23, 42, 0.9);
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--muted);
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        border-right: none;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+      }
+      .form-panel {
+        grid-template-columns: 1fr;
+      }
+      .form-section {
+        border-right: none;
+        border-bottom: 1px dashed rgba(51, 65, 85, 0.9);
+        padding-right: 0;
+        padding-bottom: 10px;
+      }
+      .form-section:last-child {
+        border-bottom: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header>
+      <div class="title-block">
+        <div class="logo-pill">T</div>
+        <div>
+          <h1>
+            <span>Template Mesh</span>
+            <small>Document & Data Template Library</small>
+          </h1>
+        </div>
+      </div>
+      <div class="meta">
+        <div><strong>Mode:</strong> Local, in‑browser only</div>
+        <div>Storage: <strong>localStorage</strong> · Schema: <strong>JSON</strong></div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Sidebar: Template Library & Editor -->
+      <aside class="sidebar">
+        <div>
+          <div class="section-label">Template library</div>
+          <div class="template-list">
+            <div class="template-list-header">
+              <span id="template-count-label">0 templates</span>
+              <button id="new-template-btn" class="primary">
+                + New template
+              </button>
+            </div>
+            <div class="template-items" id="template-list"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="section-label">Template definition</div>
+          <div class="template-editor">
+            <div>
+              <label for="template-name-input">Template name</label>
+              <input
+                type="text"
+                id="template-name-input"
+                placeholder="e.g. Client Intake, Incident Report, Lab Sample"
+              />
+            </div>
+
+            <div>
+              <label>Fields</label>
+              <div id="field-list"></div>
+              <button id="add-field-btn" style="margin-top: 6px;">
+                + Add field
+              </button>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; gap: 8px; margin-top: 4px;">
+              <button id="save-template-btn" class="primary" style="flex: 1;">
+                Save template
+              </button>
+              <button id="reset-template-btn" style="flex: 0 0 auto;">
+                Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main content: Form + Entries -->
+      <section class="content">
+        <div class="form-panel">
+          <div class="form-section">
+            <div class="form-header">
+              <h2>Fill instance</h2>
+              <small id="active-template-label">No template selected</small>
+            </div>
+            <div class="form-fields" id="form-fields"></div>
+            <div style="margin-top: 8px; display: flex; justify-content: flex-end; gap: 8px;">
+              <button id="clear-form-btn">Clear</button>
+              <button id="save-entry-btn" class="primary">
+                Save entry
+              </button>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-header">
+              <h2>Template meta</h2>
+              <small id="template-meta-label">—</small>
+            </div>
+            <div style="font-size: 12px; color: var(--muted); display: flex; flex-direction: column; gap: 6px;">
+              <div>
+                <div class="pill">
+                  <span class="pill-dot"></span>
+                  <span id="meta-status">Idle</span>
+                </div>
+              </div>
+              <div>
+                <strong>Template ID:</strong>
+                <span id="meta-id">—</span>
+              </div>
+              <div>
+                <strong>Field count:</strong>
+                <span id="meta-fields">0</span>
+              </div>
+              <div>
+                <strong>Entries stored:</strong>
+                <span id="meta-entries">0</span>
+              </div>
+              <div>
+                <strong>Storage key:</strong>
+                <code id="meta-storage-key">—</code>
+              </div>
+              <div>
+                <strong>Schema (JSON):</strong>
+                <pre id="meta-schema" style="margin: 4px 0 0; padding: 6px 8px; border-radius: 6px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(30, 64, 175, 0.7); max-height: 140px; overflow: auto; font-size: 11px; color: #e5e7eb;"></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="entries-panel">
+          <div class="entries-header">
+            <h3>Entries</h3>
+            <div>
+              <span class="badge">
+                <span class="badge-dot"></span>
+                <span id="entries-badge-label">No template</span>
+              </span>
+            </div>
+          </div>
+          <div class="entries-list" id="entries-list">
+            <div class="empty-state">
+              Select a template and save entries to see them here.
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="status-bar">
+      <span>
+        <span class="status-dot"></span>
+        <strong>Ready</strong> · All data is stored locally in your browser.
+      </span>
+      <div class="status-right">
+        <span>Shortcuts:</span>
+        <span><code>Ctrl + N</code> new template</span>
+        <span><code>Ctrl + S</code> save template</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Data model & storage helpers ---------------------------------------
+
+    const STORAGE_KEY_TEMPLATES = "templateMesh.templates.v1";
+    const STORAGE_KEY_ENTRIES_PREFIX = "templateMesh.entries.";
+
+    /**
+     * Template shape:
+     * {
+     *   id: string,
+     *   name: string,
+     *   fields: [{ id, label, type }]
+     * }
+     *
+     * Entry shape:
+     * {
+     *   id: string,
+     *   createdAt: number,
+     *   values: { [fieldId]: any }
+     * }
+     */
+
+    function loadTemplates() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_TEMPLATES);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.
